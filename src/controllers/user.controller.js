@@ -26,20 +26,23 @@ const register = async (req,res , next) =>{
         if(!fullName ||!email ||!password){
             return next(new ApiError('All fields are required',400));
         }
+        const fileName = req.file.buffer;
+        const fileType = req.file.mimetype;
+        //console.log("file : ",req.file);
+        
         const userExists = await User.findOne({email});
-        const{path} = req.file;
                 
         if(userExists){
-            fs.unlinkSync(path);
+            //fs.unlinkSync(path);
             return next(new ApiError("Email already exists ",400));
         }            
        
-        if(!path){
+        if(!fileName){
             return next(new ApiError(400, "Avatar file is missing"));
         }
-        const avatar = await uploadOnCloudinary(path);       
+        const avatar = await uploadOnCloudinary(fileName,fileType );       
     
-        if (!avatar.url) {
+        if (!avatar?.url) {
             return next(new ApiError( "Error while uploading on avatar ",400))
         }
                
@@ -245,21 +248,23 @@ const updateUser = async(req,res,next) =>{
        
         const {id} =req.params;
        
-        const{path} =req.file    
+         const fileName = req.file.buffer;
+        const fileType = req.file.mimetype;
+        //console.log("file : ",req.file);   
         const user = await User.findById(id);
         if(fullName){
         user.fullName= fullName;
         }
        
-        if(path)
+        if(fileName)
         {          
-            const avatar =await uploadOnCloudinary(path);
+            const avatar =await uploadOnCloudinary(fileName, fileType);
                         
             if(!avatar?.url){
                 return next(new ApiError("Error while uploading  on cloudinary",500))
             }
             const resp = await destroyFile(user.avatar.public_id);
-            console.log("update : ",resp);
+            //console.log("update : ",resp);
             
             user.avatar.public_id= avatar.public_id;
             user.avatar.secure_url = avatar.secure_url;

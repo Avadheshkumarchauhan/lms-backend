@@ -47,12 +47,14 @@ const createCourse = async(req, res, next) =>{
         if(!title || !description || !category || !createdBy){
             return next(new ApiError("All fields are required",400));  
         }     
-        const{path} = req.file;
+        const fileName = req.file.buffer;
+        const fileType = req.file.mimetype;
+        console.log("file : ",req.file);
                
-        if (!path) {
+        if (!fileName) {
              return next(new ApiError("Thumbnail is meassing",400));
         }
-        const thumbnail = await uploadOnCloudinary(path);
+        const thumbnail = await uploadOnCloudinary(fileName, fileType);
       
         
         if(!thumbnail.url){
@@ -121,8 +123,9 @@ const addLectureToCourseById = async(req, res, next) =>{
                        
         const {id} =req.params;
                
-        const {path} = req.file;
-             
+        const fileName = req.file.buffer;
+        const fileType = req.file.mimetype;
+        console.log("file : ",req.file);             
           if(!title || !description ||!id){
             return next(new ApiError("All fields are required",400));  
         }
@@ -135,10 +138,10 @@ const addLectureToCourseById = async(req, res, next) =>{
         const course = await Course.findById(id);
         if (!course) {
              return next(new ApiError("Course with given id does not exist",500));
-        }  if (!path) {
+        }  if (!fileName) {
              return next(new ApiError("Thumbnail is meassing",400));
         }
-        const lecture = await uploadOnCloudinary(path);
+        const lecture = await uploadOnCloudinary(fileName, fileType);
                
         if(!lecture?.url){
             return next("Error while uploading  thumbnail on cloudinary ",400);  

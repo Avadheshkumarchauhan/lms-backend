@@ -13,22 +13,44 @@ config({
         api_secret: process.env.CLOUDINARY_API_SECRET // Click 'View API Keys' above to copy your API secret
     });
 
-    const uploadOnCloudinary = async (localFilePath) => {
+    // const uploadOnCloudinary = async (localFilePath) => {
+    //     try {
+          
+            
+    //         if(!localFilePath) return null;
+
+    //         const response = await cloudinary.uploader.upload(localFilePath, {
+    //             resource_type: "auto"
+    //         })
+          
+    //        fs.unlinkSync(localFilePath);
+                     
+    //         return response
+            
+    //     } catch (error) {
+    //         fs.unlinkSync(localFilePath);
+    //         console.log("Error cloudinary file : ",error);           
+    //         return null;
+    //     }
+    // }
+    const uploadOnCloudinary = async (localFilePath,fileType) => {
         try {
           
             
             if(!localFilePath) return null;
+            const base64File = `data:${fileType};base64,${localFilePath.toString("base64")}`;
 
-            const response = await cloudinary.uploader.upload(localFilePath, {
+            const response = await cloudinary.uploader.upload(base64File, {
                 resource_type: "auto"
             })
           
-           fs.unlinkSync(localFilePath);
+           //fs.unlinkSync(localFilePath);
+                  
                      
             return response
             
         } catch (error) {
-            fs.unlinkSync(localFilePath);
+           // fs.unlinkSync(localFilePath);
             console.log("Error cloudinary file : ",error);           
             return null;
         }
